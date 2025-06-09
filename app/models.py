@@ -6,8 +6,8 @@ class User(AbstractUser):
 
 class Aluno(models.Model):
     nome = models.CharField(max_length=255)
-    edv = models.CharField(max_length=255)
-    data = models.DateField()
+    edv = models.CharField(max_length=8)
+    data_aniversario = models.DateField()
 
     def __str__(self):
         return self.nome
