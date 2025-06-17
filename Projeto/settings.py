@@ -99,7 +99,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'Banco_ThinkSafe',
         'USER': 'root',
-        'PASSWORD': 'senai',
+        'PASSWORD': 'root',
         'HOST': 'localhost',
         'PORT': '3306',
     }
