@@ -1,8 +1,11 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from .views import AlunoView, CursoView, TurmaView, AlunoListView, CursoListView, TurmaListView, AlunoDeleteView, CursoDeleteView # não edsquecer de importar os delete dos curso, turma
+from .views import AlunoView, CursoView, TurmaView, AlunoListView, CursoListView, TurmaListView, AlunoDeleteView, CursoDeleteView, TurmaDeleteView, UserView# não edsquecer de importar os delete dos curso, turma
 # Definindo endpoints utilizando class-based views
 urlpatterns = [
+    #Criar usuario
+    path('api/user/', UserView.as_view(), name='criar_usuario'),
+
     # JWT Authenticação
     path('token/', TokenObtainPairView.as_view(), name=''),
     path('token/refresh/', TokenRefreshView.as_view(), name=''),

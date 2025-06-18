@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
+    NI = models.CharField(max_length=255, blank=True, null=True)
     is_instructor = models.BooleanField(default=False)
 
 class Aluno(models.Model):

@@ -1,10 +1,12 @@
 from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import ValidationError
+from django.db import IntegrityError
 from rest_framework import permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from app.models import Aluno, Curso, Turma
-from app.serializers import AlunoSerializer, CursoSerializer, TurmaSerializer
+from app.serializers import AlunoSerializer, CursoSerializer, TurmaSerializer, UserSerializer
 from rest_framework import generics, status
 import logging
 
@@ -14,6 +16,23 @@ class IsInstructor(permissions.BasePermission):
         return request.user.is_authenticated and request.user.is_instrutor
 
 logger = logging.getLogger(__name__)
+
+class UserView(APIView):
+    def post(self, request):
+        try:
+            serializer = UserSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except ValidationError as e:
+            return Response({"error": "Erro de validação", "details": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except IntegrityError as e:
+            return Response({"error": "Erro de integridade", "details": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"error": "Erro interno", "details": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 # criar aluno
 class AlunoView(APIView):
@@ -133,7 +152,18 @@ class CursoDeleteView(APIView):
             return Response({"Error": f"Erro ao deletar curso: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 # Deletar Turma
-        
+class TurmaDeleteView(APIView):
+    permission_classes = [IsAuthenticated, IsInstructor]
+
+    def delete(self, request, pk):
+        try:
+            turma = Turma.objects.get(pk=pk)
+            turma.delete()
+            return Response({"message": "Turma deletada com sucesso!"}, status=status.HTTP_204_NO_CONTENT)
+        except Turma.DoesNotExist:
+            return Response({"Erro": "Turma não encontrada."}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"Error": f"Erro ao deletar Turma: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
     
 

@@ -1,10 +1,18 @@
 from rest_framework import serializers
-from app.views import Aluno, Curso, Turma, User
+from app.models import Aluno, Curso, Turma, User
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'is_instructor']
+        fields = ['id', 'username', 'password', 'is_instructor']
+    def create(self, validated_data):
+        user = User.objects.create_user(
+            username=validated_data['username'],
+            password=validated_data['password'],
+            is_instructor=validated_data.get('is_instructor', False)
+        )
+        return user
 
 class AlunoSerializer(serializers.ModelSerializer):
     class Meta:
